@@ -1,0 +1,30 @@
+class UserController {
+public function __construct() {
+$this->connection = mysql_connect("localhost", "user", "password");
+mysql_select_db("ProductionDatabase", $this->connection);
+}
+/**
+* registers the user (if it doesn't exist) and returns the database id */
+public function register_and_Notify() {
+$user_exists = mysql_query("SELECT * from users where email = '". $_POST['email'] . "'",
+$this->connection);
+if($user_exists) {
+return mysql_fetch_assoc($user_exists)['id'];
+} else {
+// insert into database
+mysql_query("INSERT INTO users(name, email) values('" . $_POST['name'] . "', '" . $_POST['email'] . "'",
+$this->connection);
+// send welcome email
+mail($_POST['email'], 'Welcome to Leadtech', "Hello $_POST['name'], thanks for registering on our
+site. <br>Regards, Leadtech Team");
+// return user id
+return mysql_insert_id();
+}
+}
+}
+
+I don't have much experience in PHP but seeing what the code does what I would do would be the following:
+- Create a use case that is in charge of doing the logic and inside using the dependency injector.
+- Validate the input data before send it to the usecase
+- Error handling
+- Create unit test
